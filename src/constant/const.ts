@@ -1,0 +1,1 @@
+export const minerKeyRegex = /\b([A-Z]{2,6})-[A-Z0-9]{32}\b/gm;
