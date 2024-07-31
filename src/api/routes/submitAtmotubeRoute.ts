@@ -11,9 +11,11 @@ router.post(
   async (req: Request<{}, {}, RequestBody>, res: Response) => {
     console.log(req.body, "____body");
     try {
+      console.log('pass 4')
       const { token, deviceId, address, minerKey } = req.body;
 
-      if (!token || !deviceId || !address) {
+      if (!token || !deviceId || !minerKey || !address) {
+        console.log('pass 5')
         return res
           .status(400)
           .send({
@@ -23,6 +25,7 @@ router.post(
       }
 
       if (!minerKeyRegex.test(minerKey)) {
+        console.log('pass')
         return void res.status(400).send({
           message: "Miner Key is invalid. (Didn't pass check)",
           status: "ERROR",
@@ -32,6 +35,7 @@ router.post(
       // Check if the device already exists in the database
       const existingDevice = await Atmotube.findOne({ deviceId: deviceId });
       if (existingDevice) {
+        console.log('pass 2')
         return res.status(400).send({
           message: "ID already exists.",
           status: "ERROR",
@@ -42,6 +46,7 @@ router.post(
       const url = `https://api.atmotube.com/api/v1/data?api_key=${token}&mac=${deviceId}&order=asc&format=json&offset=0&limit=100`;
 
       try {
+        console.log('pass 3')
         const response = await axios.get(url);
         const deviceData = response.data;
         console.log("deviceData", deviceData);
