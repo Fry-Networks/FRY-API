@@ -85,7 +85,7 @@ setInterval(fetchDataAndUpdate, 10 * 60 * 1000); // Run every 10 minutes
 router.post(
     "/api/submitNRF",
     async (req: Request<{}, {}, RequestBody>, res: Response) => {
-        console.log(req.body, "____body");
+        console.log(req.body, "____bodyNRF");
         try {
             const { token, deviceId, address, minerKey } = req.body;
 

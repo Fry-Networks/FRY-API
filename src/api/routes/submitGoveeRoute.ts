@@ -12,7 +12,6 @@ router.post('/api/submitGoveeKey', async function (req, res) {
   try {
     const data = req.body;
     console.log(data, 'Govee data');
-    
     const existingKey = await GoveeAccount.exists({ api_key: data.apiKey });
 
     if (existingKey) {
@@ -23,60 +22,69 @@ router.post('/api/submitGoveeKey', async function (req, res) {
     }
 
     if (!minerKeyRegex.test(data.minerKey)) {
-      return void res.status(400).send({
-        message: "Miner Key is invalid. (Didn't pass check)",
-        status: "ERROR",
-      });
-    }
-
-    const response = await axios.post(
-      'https://openapi.api.govee.com/router/api/v1/device/state',
-      {
-        requestId: uuidv4(),
-        payload: {
-          sku: 'H5100',
-          device: data.deviceId,
-        },
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Govee-API-Key': data.apiKey,
-        },
-      }
-    );
-    console.log(response.data, 'API response');
-
-    const apiResponse = response.data;
-
-    if (apiResponse.code !== 200) {
       return res.status(400).send({
-        message: 'Key is invalid. (Did not pass API check)',
+        message: "Miner Key is invalid. (Didn't pass check)",
         status: 'ERROR',
       });
     }
-    
-    const user = await getUserByAddress(data.address);
 
-    const goveeAccount = new GoveeAccount({
-      api_key: data.apiKey,
-      user_id: user._id,
-      timestamp: new Date(),
-      api_type: 'govee',
-      device_id: data.deviceId,
-      minerKey: data.minerKey,
-      sku: data.sku,
-      walletAddress: data.address,
-      capabilities: apiResponse.payload.capabilities,
-    });
+    try {
+      const response = await axios.post(
+        'https://openapi.api.govee.com/router/api/v1/device/state',
+        {
+          requestId: uuidv4(),
+          payload: {
+            sku: 'H5100',
+            device: data.deviceId,
+          },
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Govee-API-Key': data.apiKey,
+          },
+        }
+      );
+      console.log(response.data, 'API response');
 
-    await goveeAccount.save();
-    newApiKeyEvent.emit('newApiKey', goveeAccount._id);
+      const apiResponse = response.data;
 
-    res.status(200).send({
-      message: 'Successfully linked your API Key to your wallet address!',
-      status: 'SUCCESS',
-    });
+      if (apiResponse.code !== 200) {
+        return res.status(400).send({
+          message: 'Key is invalid. (Did not pass API check)',
+          status: 'ERROR',
+        });
+      }
+
+      const user = await getUserByAddress(data.address);
+
+      const goveeAccount = new GoveeAccount({
+        api_key: data.apiKey,
+        user_id: user._id,
+        timestamp: new Date(),
+        api_type: 'govee',
+        device_id: data.deviceId,
+        minerKey: data.minerKey,
+        sku: data.sku,
+        walletAddress: data.address,
+        capabilities: apiResponse.payload.capabilities,
+      });
+
+      await goveeAccount.save();
+      newApiKeyEvent.emit('newApiKey', goveeAccount._id);
+
+      res.status(200).send({
+        message: 'Successfully linked your API Key to your wallet address!',
+        status: 'SUCCESS',
+      });
+    } catch (error: any) {
+      console.error('API Error:', error.message);
+      return res.status(400).send({
+        message: 'Invalid API key or device ID.',
+        status: 'ERROR',
+        error: error.message,
+      });
+    }
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send({
