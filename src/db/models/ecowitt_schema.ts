@@ -38,8 +38,8 @@ const deviceSchema = new mongoose.Schema({
 });
 
 const EcowittaccountSchema = new mongoose.Schema({
-  api_key: { type: String, required: true },
-  app_key: { type: String, required: true },
+  api_key: { type: String },
+  app_key: { type: String },
   devices: [deviceSchema]
 });
 

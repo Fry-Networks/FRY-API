@@ -41,7 +41,7 @@ router.post("/api/submitEcokey", async function (req, res) {
     }
 
     const response = await axios.get(
-      `https://api.ecowitt.net/api/v3/device/list?application_key=${data.app_key}&api_key=${data.apiKey}`
+      `https://api.ecowitt.net/api/v3/device/list?application_key=${data.appKey}&api_key=${data.apiKey}`
     );
     console.log(response,'url')
 
@@ -73,7 +73,7 @@ router.post("/api/submitEcokey", async function (req, res) {
       user_id: user._id,
       timestamp: new Date(),
       api_type: "ecowitt",
-      app_key: data.app_key,
+      app_key: data.appKey,
       walletAddress: data.address,
       minerKey: data.minerKey,
       devices: devices,
