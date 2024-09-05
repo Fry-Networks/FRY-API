@@ -1,5 +1,3 @@
-// Main File
-
 import "dotenv/config";
 import { startApi } from "./api/api.js";
 

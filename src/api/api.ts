@@ -6,6 +6,7 @@ import submitKeyRoute from "./routes/submitAmbientRoute.js";
 import submitAtmotubeRoute from "./routes/submitAtmotubeRoute.js";
 import submitAwairRoute from "./routes/submitAwairRoute.js";
 import submitEcoKeyRoute from "./routes/submitEcoKeyRoute.js";
+import submitGMCMapRoute from "./routes/submitGMCMapRoute.js";
 import submitGoveeKey from "./routes/submitGoveeRoute.js";
 import submitIopoolRoute from "./routes/submitIopoolRoute.js";
 import submitKaiterraRoute from "./routes/submitKaiterraRoute.js";
@@ -56,6 +57,7 @@ app.use(submitIopoolRoute);
 app.use(submitShellyRoute);
 app.use(submitSwitchbotRoute);
 app.use(submitSensecap);
+app.use(submitGMCMapRoute);
 
 export async function startApi() {
   await connect();
